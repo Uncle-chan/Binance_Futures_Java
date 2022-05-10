@@ -2,6 +2,7 @@ package com.binance.client;
 
 import com.binance.client.constant.BinanceApiConstants;
 import com.binance.client.exception.BinanceApiException;
+
 import java.net.URL;
 
 /**
@@ -36,4 +37,11 @@ public class RequestOptions {
     public String getUrl() {
         return url;
     }
+
+    public void setHttpProxy(String ip, int port) {
+        ProxyOptions.HTTP_POXY_IP = ip;
+        ProxyOptions.HTTP_POXY_PORT = port;
+    }
+
+
 }

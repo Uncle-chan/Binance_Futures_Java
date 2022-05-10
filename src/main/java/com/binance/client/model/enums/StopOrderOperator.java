@@ -1,9 +1,7 @@
 package com.binance.client.model.enums;
 
 public enum StopOrderOperator {
-    /**
-     * GTE,greater than and equal (>=) ,LTE less than and equal (<=)
-     */
+
     GTE("gte", "greater than and equal (>=)"), LTE("lte", "less than and equal (<=)");
 
     private String operator;

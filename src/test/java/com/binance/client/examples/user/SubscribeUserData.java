@@ -5,6 +5,8 @@ import com.binance.client.SyncRequestClient;
 import com.binance.client.SubscriptionClient;
 import com.binance.client.examples.constants.PrivateConfig;
 
+import java.util.Collections;
+
 public class SubscribeUserData {
 
     public static void main(String[] args) {
@@ -27,6 +29,7 @@ public class SubscribeUserData {
 
    
         client.subscribeUserDataEvent(listenKey, System.out::println, null);
+
 
     }
 

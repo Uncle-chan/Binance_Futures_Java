@@ -1,20 +1,25 @@
 package com.binance.client.impl;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+import com.binance.client.ProxyOptions;
+import com.binance.client.exception.BinanceApiException;
+import com.binance.client.impl.utils.JsonWrapper;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.binance.client.exception.BinanceApiException;
-import com.binance.client.impl.utils.JsonWrapper;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import java.io.FileOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.concurrent.TimeUnit;
 
 abstract class RestApiInvoker {
 
     private static final Logger log = LoggerFactory.getLogger(RestApiInvoker.class);
-    private static final OkHttpClient client = new OkHttpClient();
+
+    private static OkHttpClient client;
+
 
     static void checkResponse(JsonWrapper json) {
         try {
@@ -49,10 +54,10 @@ abstract class RestApiInvoker {
 
     static <T> T callSync(RestApiRequest<T> request) {
         try {
+            initClient();
             String str;
             log.debug("Request URL " + request.request.url());
             Response response = client.newCall(request.request).execute();
-            // System.out.println(response.body().string());
             if (response != null && response.body() != null) {
                 str = response.body().string();
                 response.close();
@@ -73,7 +78,23 @@ abstract class RestApiInvoker {
     }
 
     static WebSocket createWebSocket(Request request, WebSocketListener listener) {
+        initClient();
         return client.newWebSocket(request, listener);
     }
+
+    private static void initClient() {
+        if (client == null) {
+            if (ProxyOptions.HTTP_POXY_IP == null) {
+                client = new OkHttpClient();
+                client.dispatcher().setMaxRequests(1024 * 5);
+                client.dispatcher().setMaxRequestsPerHost(1024);
+            } else {
+                client = new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ProxyOptions.HTTP_POXY_IP, ProxyOptions.HTTP_POXY_PORT))).readTimeout(5000, TimeUnit.MILLISECONDS).writeTimeout(5000, TimeUnit.MILLISECONDS).connectTimeout(5000, TimeUnit.MILLISECONDS).connectionPool(new ConnectionPool()).build();
+                client.dispatcher().setMaxRequests(1024 * 5);
+                client.dispatcher().setMaxRequestsPerHost(1024);
+            }
+        }
+    }
+
 
 }

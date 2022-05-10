@@ -11,9 +11,10 @@ package com.binance.client;
 public interface ResponseCallback<T> {
 
   /**
+   *
    * Be called when the request successful.
    *
-   * @param response The {@link AsyncResult} of the asynchronous invoking.
+   * @param response asynchronous invoking.
    */
   void onResponse(T response);
 }
